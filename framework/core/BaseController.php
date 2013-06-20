@@ -1,8 +1,10 @@
 <?php
 
-class TController
+class BaseController
 {
 
+    // Layout for render
+    public $layout = null;
     /**
      * Default 404 Action for each controller.
      *
@@ -11,6 +13,6 @@ class TController
      */
     public function action404()
     {
-
+        Hooks::fire('controller.404');
     }
 }

@@ -10,6 +10,8 @@ class SimpleLogger
 
     public function getLogsByCategory($cat)
     {
+        if(count($this->logs)<1)
+            return null;
         $return = array();
         foreach($this->logs as $log)
         {

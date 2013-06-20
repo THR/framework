@@ -8,12 +8,12 @@ $app = new Application();
 
 
 Hooks::add('route.beforeDecide',function(){
-    $request = Request::get_instance();
-    if(substr($request->uri,0,2) == 'en' )
-    {
 
-       $request->toDispatch ='/default/database/';
+    if(substr(Base::app()->request->uri,0,2) == 'en' )
+    {
+        Base::app()->request->uri = substr(Base::app()->request->uri,3);
     }
+    var_dump(Base::app()->request);
 });
 
 
@@ -36,4 +36,5 @@ Hooks::add('app.end',function(){
     var_dump(Base::getLogger()->getLogsByCategory('SQL'));
 });
 Router::add('tahir','tahir/<name>','default/index');
+Router::add('database','database','default/database');
 $app->run();

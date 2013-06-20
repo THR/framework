@@ -10,7 +10,7 @@ class Base
     private static $_coreClasses = array(
         'Component'=>'core/Component.php',
         'Hooks'=> 'core/Hooks.php',
-        'TController'=>'core/TController.php',
+        'TController'=>'core/BaseController.php',
         'Request'=>'web/Request.php',
         'Router'=>'web/Router.php',
         'QueryBuilder'=>'db\QueryBuilder.php',

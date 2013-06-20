@@ -81,7 +81,7 @@ class Router
 
                 $this->routeName = $name;
                 $this->routeUrl  = $handler;
-                $request->toDispatch = $handler .'/'. implode('/',$params);
+                Base::app()->request->toDispatch = $handler .'/'. implode('/',$params);
                 return $handler;
             }
 

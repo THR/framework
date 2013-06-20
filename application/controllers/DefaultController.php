@@ -1,5 +1,5 @@
 <?php
-class DefaultController
+class DefaultController extends BaseController
 {
 
     public function actionIndex($name='tahir')

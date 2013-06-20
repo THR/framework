@@ -4,7 +4,7 @@ class Application
     protected $_defaultComponents;
     protected $_components = array();
     protected $_paths = array();
-    protected $request;
+    public $request;
     public $router;
     protected $dispatchRoute;
     private $defaultController = 'default';
@@ -82,6 +82,7 @@ class Application
         {
             //this runs only controller
         }else{
+            Hooks::fire('app.404');
             $this->run404();
         }
     }
