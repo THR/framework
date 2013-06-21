@@ -4,7 +4,7 @@ class SimpleLogger
     protected $logs;
     public function add($msg,$level = 'info' ,$category = 'application')
     {
-        $this->logs[] = array($msg,$level,$category,microtime());
+        $this->logs[] = array($msg,$level,$category,microtime(true));
     }
 
 

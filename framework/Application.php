@@ -28,7 +28,8 @@ class Application
 
         Base::setLogger(new SimpleLogger());
 
-        Base::setPathofAlias('application','application'.BASE_PATH.DIRECTORY_SEPARATOR.'application');
+        Base::setPathofAlias('application',BASE_PATH.DIRECTORY_SEPARATOR.'application');
+
         $this->init();
     }
 

@@ -10,10 +10,11 @@ class Base
     private static $_coreClasses = array(
         'Component'=>'core/Component.php',
         'Hooks'=> 'core/Hooks.php',
-        'TController'=>'core/BaseController.php',
+        'BaseController'=>'core/BaseController.php',
         'Request'=>'web/Request.php',
         'Router'=>'web/Router.php',
         'QueryBuilder'=>'db\QueryBuilder.php',
+        //'Database'=>'db\Database.php',
         'SimpleLogger'=>'core\SimpleLogger.php'
     );
     private static $_aliases = array('system'=>FW_PATH,'base'=>BASE_PATH);

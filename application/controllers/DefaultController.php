@@ -8,12 +8,22 @@ class DefaultController extends BaseController
     }
     public function actionDatabase()
     {
-        $db = new QueryBuilder('bugraguney.com.tr','bugragun_ar','bugragun_ar','ASD123qwe');
+        Base::import('system.db.Database');
+        Base::import('application.helpers.HtmlHelper');
+        $db = new Database('bugraguney.com.tr','bugragun_ar','bugragun_ar','ASD123qwe');
 
-        $data = array('name'=>'tahir','value'=>microtime());
+        $result = $db->query('INSERT INTO lorem (name,value) VALUES (?,?)',array('tahir','uzaktan'));
+        var_dump($result);
 
-        var_dump($db->insert('lorem',$data));
+        $result = $db->query('SELECT name,value FROM lorem ORDER BY id DESC')->fetchAll(PDO::FETCH_ASSOC);
+        HtmlHelper::makeTable($result,array('Name','Value'));
 
-        var_dump($db->query("select * FROM lorem"));
+        var_dump($db->insert('lorem',array('tahir','insert function')));
+
+
+
+        var_dump(Base::getPathofAlias('application'));
+        $logs = Base::getLogger()->getLogsByCategory('SQL');
+        HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman'));
     }
 }
