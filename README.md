@@ -62,7 +62,7 @@ Router::add('blog.post','blog/<slug:\w+>.html','blog/default/show');
 'blog.post' isimli kural, şunları yakalayabilir.
 *site.com/blog/lorem.html, site.com/blog/tahir.html*
 
-Post id'si -ya da başka bir identifier'ı- blog modülünün default controllerının show modülüne parametre olarak gidecek.
+Post id'si -ya da başka bir identifier'ı- **blog** modülünün **default** controllerının **show** action'ınına parametre olarak gidecek.
 
 yani defaultController.php de
 ```php
@@ -85,3 +85,10 @@ Router::createLink('blog.post',array('slug'=>'tahir'));
 
 kodunu kullanabilirsiniz.
 Döndüreceği değer: site.com/blog/tahir.html olacaktır.
+
+## Theme
+Yii'nin tema sistemi hoşuma gitmişti. Buna benzer birşey yapmak lazım.
+
+varsayılan bir viewPath olur, eğer tema ayarlanmışsa view dosyası için önce tema dizini altındaki viewe bakacak. Yoksa varsayılan viewPath'e.
+
+
