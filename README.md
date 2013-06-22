@@ -18,6 +18,9 @@ Bu, bir kaç framework'ün güzel yanlarını ve ihtiyaçlarımı harmanlayıp, 
 - [ ] Render motoruyla ilişkili theme ve layout
 - [ ] ve en önemlisi boyutu mümkün olduğunca küçük olsun
 
+## Server Gereksinimleri
+PHP 5.3 ya da daha yeni
+
 ##Hooks
 Örneğin Router sınıfı hangi controllerın çalışacağına karar vermeden önce birşeyler yapmak, araya kanca atmak için:
 
