@@ -4,7 +4,9 @@ class DefaultController extends BaseController
 
     public function actionIndex($name='tahir')
     {
-        var_dump(func_get_args());
+        //var_dump(func_get_args());
+        //var_dump($_GET);
+        var_dump(Base::app()->language);
     }
     public function actionDatabase()
     {

@@ -65,7 +65,7 @@ class Base
                         if(file_exists($path.'.php'))
                             self::$_classMap[$className] = $path;
                         else
-                            exit('File couldn\'t found');
+                            exit('File couldn\'t found:' . $path);
                     }
                 }
 

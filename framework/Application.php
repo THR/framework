@@ -2,8 +2,9 @@
 class Application
 {
     protected $_defaultComponents;
-    protected $_components = array();
+    protected $_components = array('language'=>array('class'=>'system.components.Language'));
     protected $_paths = array();
+    protected $_config;
     public $request;
     public $router;
     protected $dispatchRoute;
@@ -14,9 +15,12 @@ class Application
     public $modulePath     = 'application/modules/';
     public $controller;
 
-    public function __construct()
-    {
 
+
+
+    public function __construct($config)
+    {
+        $this->_config = $config;
         //SET reversed names for default components
         $this->_defaultComponents = array(
             //'request'   =>array('class'=>'framework/web/Request'),
@@ -33,6 +37,9 @@ class Application
         $this->init();
     }
 
+
+
+
     public function init()
     {
         Base::setApp($this);
@@ -44,11 +51,18 @@ class Application
         $this->router    = Router::get_instance();
     }
 
+
+
+
+
     public function run()
     {
         Hooks::fire('app.setted');
 
-
+        foreach($this->_config['components'] as $k=>$v)
+        {
+            $this->createComponent($k,$v);
+        }
 
 
 
@@ -63,6 +77,9 @@ class Application
 
 
     }
+
+
+
 
     /**
      * Dispatch uri as controller = foo, action = foo
@@ -88,6 +105,9 @@ class Application
         }
     }
 
+
+
+
     public function runModule($vars)
     {
         if(!file_exists($this->modulePath.$vars[0].'/'.ucfirst($vars[0]).'Module.php'))
@@ -98,6 +118,10 @@ class Application
         $this->module = array_shift($vars);
         $this->runController($vars);
     }
+
+
+
+
 
     public function runController($vars = array())
     {
@@ -114,6 +138,10 @@ class Application
         return false;
 
     }
+
+
+
+
 
     public function runAction($vars)
     {
@@ -135,13 +163,21 @@ class Application
         return false;
     }
 
+
+
+
+
     public function run404()
     {
         exit("<h1>404</h1>");
     }
 
+
+
+
     public function createComponent($name,$config)
     {
+        echo $name;
         if(!isset($config['class']))
             throw new SystemException('Where Is Class IN?');
 
@@ -160,10 +196,17 @@ class Application
         return $this->_components[$name];
     }
 
+
+
+
     public function __destruct()
     {
         Hooks::fire('app.end');
     }
+
+
+
+
     public function __get($name)
     {
         $getter = 'get'.$name;
@@ -173,6 +216,9 @@ class Application
         if(isset($this->_components[$name]))
             return $this->_components[$name];
     }
+
+
+
 
     public function __set($name,$value)
     {

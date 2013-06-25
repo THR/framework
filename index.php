@@ -3,7 +3,7 @@
 error_reporting(-1);
 require_once "framework/Application.php";
 
-$app = new Application();
+$app = new Application(include 'application/config/Main.php');
 
 
 /*
