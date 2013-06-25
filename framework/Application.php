@@ -2,7 +2,7 @@
 class Application
 {
     protected $_defaultComponents;
-    protected $_components = array('language'=>array('class'=>'system.components.Language'));
+    protected $_components = array();
     protected $_paths = array();
     protected $_config;
     public $request;
@@ -49,6 +49,9 @@ class Application
 
         $this->request   = Request::get_instance();
         $this->router    = Router::get_instance();
+
+
+
     }
 
 
@@ -59,10 +62,7 @@ class Application
     {
         Hooks::fire('app.setted');
 
-        foreach($this->_config['components'] as $k=>$v)
-        {
-            $this->createComponent($k,$v);
-        }
+
 
 
 
@@ -177,12 +177,13 @@ class Application
 
     public function createComponent($name,$config)
     {
-        echo $name;
         if(!isset($config['class']))
             throw new SystemException('Where Is Class IN?');
 
         Base::import($config['class']);
-        $className = ucfirst($name);
+        preg_match('#[a-zA-Z0-9_-]*$#',$config['class'],$m);
+
+        $className = ucfirst($m[0]);
         unset($config['class']);
 
         $this->_components[$name] = new $className();
@@ -202,6 +203,8 @@ class Application
     public function __destruct()
     {
         Hooks::fire('app.end');
+        
+
     }
 
 
@@ -215,8 +218,24 @@ class Application
 
         if(isset($this->_components[$name]))
             return $this->_components[$name];
+
+        if($this->magicInitComponent($name))
+            return $this->_components[$name];
     }
 
+    public function magicInitComponent($name)
+    {
+
+        $config = $this->_config['components'];
+        if(isset($config[$name]))
+        {
+            Base::log('Magic init component: '. $name,'info','system');
+            $this->createComponent($name,$config[$name]);
+            return true;
+        }
+        Base::log($name . ' not found in config components','info','system');
+        return false;
+    }
 
 
 

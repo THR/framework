@@ -6,8 +6,10 @@ class DefaultController extends BaseController
     {
         //var_dump(func_get_args());
         //var_dump($_GET);
-        var_dump(Base::app()->language);
+        Base::app()->db;
     }
+
+
     public function actionDatabase()
     {
         Base::import('system.db.Database');
