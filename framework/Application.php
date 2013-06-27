@@ -203,7 +203,7 @@ class Application
     public function __destruct()
     {
         Hooks::fire('app.end');
-        
+
 
     }
 

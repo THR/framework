@@ -30,4 +30,24 @@ class DefaultController extends BaseController
         $logs = Base::getLogger()->getLogsByCategory('SQL');
         HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman'));
     }
+
+    public function actionCommander()
+    {
+        $com = Base::app()->db->commander();
+
+
+        var_dump( Base::app()->db->commander("UPDATE lipsum SET name = ".time()." WHERE id>60")->execute() );
+        echo '--------------';
+        var_dump( $com->insert('lipsum',array('name'=>'commander','value'=>'tahir'),true)->execute() );
+        echo '------------------';
+        var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'),rand(1,85))->execute() );
+
+
+        var_dump($com);
+        Base::import('application.helpers.HtmlHelper');
+        $logs = Base::getLogger()->getLogsByCategory('SQL');
+
+        HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman'));
+
+    }
 }

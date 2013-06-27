@@ -36,7 +36,7 @@ class QueryBuilder
         $this->stmt = $this->dbh->prepare($query);
         $this->stmt->execute($params);
 
-        Base::log($this->stmt->queryString,'info','SQL');
+        Base::log($this->stmt->queryString,'error','SQL');
 
         if(strpos($query,'select') === 0)
         {

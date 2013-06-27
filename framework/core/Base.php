@@ -15,7 +15,9 @@ class Base
         'Router'=>'web/Router.php',
         'QueryBuilder'=>'db\QueryBuilder.php',
         //'Database'=>'db\Database.php',
-        'SimpleLogger'=>'core\SimpleLogger.php'
+        'SimpleLogger'=>'core\SimpleLogger.php',
+        'DbCommander'=>'db\DbCommander.php',
+        'DbConnector'=>'db\DbConnector.php',
     );
     private static $_aliases = array('system'=>FW_PATH,'base'=>BASE_PATH);
 
