@@ -9,6 +9,8 @@ class DbCommander {
     /**
      * Type: Insert|Update|Delete|Select
      * Table: table name
+     * Where:
+     * WhereType: array|string
      * @var array
      */
     public $qParts = array();
@@ -110,12 +112,11 @@ class DbCommander {
     }
 
 
-    public function update($tableName,$params,$where,$execute = false)
+    public function update($tableName,$params,$execute = false)
     {
         $this->reset();
         $this->qParts['type']   = 'update';
         $this->qParts['table']  = $tableName;
-        $this->qParts['where']  = $where;
         $this->bindArray($params);
 
         if($execute)
@@ -132,7 +133,6 @@ class DbCommander {
         $query[] = $this->qParts['table'];
         $query[] = "SET";
         $query[] = $this->updateSetString();
-        $query[] = "WHERE";
 
         //@todo do where condition
         $query[] = $this->whereCondition();
@@ -158,29 +158,70 @@ class DbCommander {
         $this->qParts['table'] = $tableName;
         $this->qParts['where'] = $where;
     }
-    public function where()
+
+    public function deleteQuery()
     {
-        
+        $query[] = "DELETE";
+        $query[] = "FROM";
+        $query[] = $this->qParts['table'];
+        $query[] = $this->whereCondition();
+
+        $this->query = implode(" ",$query);
+
     }
+
+    public function where($condition,$op = '=',$glue='AND')
+    {
+        $this->qParts['whereOperator'] = $op;
+        $this->qParts['whereGlue']     = $glue;
+
+        if( is_array($condition) )
+        {
+            $this->qParts['whereType'] = 'array';
+            $this->qParts['where'] = $condition;
+        }
+        elseif(is_int($condition))
+        {
+            $this->qParts['whereType'] = 'pk';
+            $this->qParts['where']     = $condition;
+        }
+        else
+        {
+            $this->qParts['whereType'] = 'string';
+            $this->qParts['where'] = $condition;
+        }
+        return $this;
+    }
+
     public function whereCondition()
     {
-        $where = $this->qParts['where'];
-
-        if(isset($this->qParts['whereType']))
+        if(!isset($this->qParts['where']))
         {
+            return '';
+        }
+
+        $query[] = "WHERE";
+
+        if($this->qParts['whereType'] === 'array')
+        {
+            $array = $this->qParts['where'];
+            //array('id'=43) TO id = ?
+
+            $keys = array_keys($array);
 
 
-
-        }else {
-
-
-            if(is_string($where))
-                return $where;
-
-            if(is_int($where))
-                return 'id = '. $where;
 
         }
+        elseif($this->qParts['whereType'] === 'string')
+        {
+
+        }
+        elseif($this->qParts['whereType'] === 'pk')
+        {
+
+        }
+        var_dump($this->qParts);
+
     }
 
     public function bindArray($params)
@@ -228,8 +269,8 @@ class DbCommander {
 
     public function findType()
     {
-        $pos = strpos($this->query,' ');
-        $pos =  strtolower( substr($this->query,0,$pos) );
+        $pos = stripos($this->query,' ');
+        $pos = substr($this->query,0,$pos) ;
         $this->qParts['type'] = $pos;
     }
 

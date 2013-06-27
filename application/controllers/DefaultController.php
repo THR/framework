@@ -38,9 +38,11 @@ class DefaultController extends BaseController
 
         var_dump( Base::app()->db->commander("UPDATE lipsum SET name = ".time()." WHERE id>60")->execute() );
         echo '--------------';
-        var_dump( $com->insert('lipsum',array('name'=>'commander','value'=>'tahir'),true)->execute() );
+        var_dump( $com->insert('lipsum',array('name'=>'commander','value'=>'tahir'))->execute() );
         echo '------------------';
-        var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'),rand(1,85))->execute() );
+        var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'))->where(rand(1,50))->execute() );
+        echo '--- WHERE ARRAY  ---------------';
+        var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'))->where(array('id'=>rand(1,50)))->execute() );
 
 
         var_dump($com);
