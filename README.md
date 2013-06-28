@@ -120,5 +120,7 @@ Toplamda 2 dosyadan oluşuyor
   insert('tabloAdi',array('name'=>'tahir','foo'=>'bar')->
   execute();
 ```
+  Oluşturduğu sql kodu
+  *INSERT INTO tabloAdi (name,foo) VALUES ('tahir','bar')*
   Eklenen kaydın IDsini döndürür
   
