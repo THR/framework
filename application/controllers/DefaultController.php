@@ -36,20 +36,32 @@ class DefaultController extends BaseController
         $com = Base::app()->db->commander();
 
 
-        var_dump( Base::app()->db->commander("UPDATE lipsum SET name = ".time()." WHERE id>60")->execute() );
+        /*var_dump( Base::app()->db->commander("UPDATE lipsum SET name = ".time()." WHERE id>60")->execute() );
         echo '--------------';
         var_dump( $com->insert('lipsum',array('name'=>'commander','value'=>'tahir'))->execute() );
         echo '------------------';
         var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'))->where(rand(1,50))->execute() );
+        */
         echo '--- WHERE ARRAY  ---------------';
-        var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'))->where(array('id'=>rand(1,50)))->execute() );
+        var_dump( $com->update('lipsum',array('name'=>rand(1,1000),'value'=>'update'))->where(array('id'=>rand(1,20)))->execute() );
+
+        echo '--- WHERE PK  ---------------';
+        var_dump( $com->update('lipsum',array('name'=>rand(1,1000),'value'=>'update'))->where(rand(1,23))->execute() );
+
+        echo '--- WHERE String with bind  ---------------';
+        var_dump(
+            $com->
+                update('lipsum',array('name'=>rand(1,1000),'value'=>'string with param'))->
+                where('id < ?',array(10))->
+                execute()
+        );
 
 
-        var_dump($com);
+
         Base::import('application.helpers.HtmlHelper');
         $logs = Base::getLogger()->getLogsByCategory('SQL');
 
         HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman'));
-
+        var_dump($com);
     }
 }

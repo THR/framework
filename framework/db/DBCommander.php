@@ -26,6 +26,7 @@ class DbCommander {
 
     public $lastQuery;
 
+    
 
 
 
@@ -52,8 +53,14 @@ class DbCommander {
         if($this->query == null)
             $this->prepareQuery();
 
-        $this->stmt = $this->pdo->prepare($this->query);
-        $this->stmt->execute($this->params);
+        try{
+            $this->stmt = $this->pdo->prepare($this->query);
+            $this->stmt->execute($this->params);
+        }catch (PDOException $e)
+        {
+            echo $this->query;
+            var_dump($e);
+        }
 
 
         Base::log('Query (Executed): '.$this->readableQuery(),'info','SQL');
@@ -172,13 +179,15 @@ class DbCommander {
 
     public function where($condition,$op = '=',$glue='AND')
     {
-        $this->qParts['whereOperator'] = $op;
-        $this->qParts['whereGlue']     = $glue;
+
+
 
         if( is_array($condition) )
         {
             $this->qParts['whereType'] = 'array';
             $this->qParts['where'] = $condition;
+            $this->qParts['whereOperator'] = $op;
+            $this->qParts['whereGlue']     = $glue;
         }
         elseif(is_int($condition))
         {
@@ -187,8 +196,15 @@ class DbCommander {
         }
         else
         {
-            $this->qParts['whereType'] = 'string';
-            $this->qParts['where'] = $condition;
+            if(is_array($op))
+            {
+                $this->qParts['whereType'] = 'stringbind';
+                $this->qParts['where'] = $condition;
+                $this->qParts['whereParams'] = $op;
+            }else {
+                $this->qParts['whereType'] = 'string';
+                $this->qParts['where'] = $condition;
+            }
         }
         return $this;
     }
@@ -209,18 +225,31 @@ class DbCommander {
 
             $keys = array_keys($array);
 
+            foreach($keys as $key)
+            {
+                $querySub[] = $key . ' = ?';
+                $this->bind($this->qParts['where'][$key]);
+            }
+
+            $query[] = implode($this->qParts['whereGlue'],$querySub);
 
 
+        }
+        elseif($this->qParts['whereType'] === 'stringbind')
+        {
+            $query[] = $this->qParts['where'];
+            $this->bindArray($this->qParts['whereParams']);
         }
         elseif($this->qParts['whereType'] === 'string')
         {
-
+            $query[] = $this->qParts['where'];
         }
         elseif($this->qParts['whereType'] === 'pk')
         {
-
+            $this->bind($this->qParts['where']);
+            $query[] =  'id = ?';
         }
-        var_dump($this->qParts);
+        return implode(" ",$query);
 
     }
 
