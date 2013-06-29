@@ -95,3 +95,32 @@ Yii'nin tema sistemi hoşuma gitmişti. Buna benzer birşey yapmak lazım.
 varsayılan bir viewPath olur, eğer tema ayarlanmışsa view dosyası için önce tema dizini altındaki viewe bakacak. Yoksa varsayılan viewPath'e.
 
 
+## Veritabanı İşlemleri
+Veritabanı işlemleri için PDO kullanıyor ve şuan için sadece mysql desteği mevcut.
+Toplamda 2 dosyadan oluşuyor
+  DbConnector.php
+  DbCommander.php
+
+###DbConnector
+  Veritabanı bağlantısı için kullanılıyor ve size bir DbCommander nesnesi oluşturma imkanı sağlıyor.
+  Sayfadaki tüm DbCommanderlar aynı PDO bağlantısını kullanır.
+  
+###DbCommander
+  Veritabanı işlemlerinizi kolay bir şekilde yapmanıza olanak sağlıyor. Basitce insert,update,delete ve select işlemleri yapabilirsiniz
+  
+  Yeni bir DbCommander nesnesi oluşturmak için DbConnector'ı kullanabilirsiniz
+```php
+  $com = Base::app()->db->commander();
+
+```
+  *INSERT*
+  Insert işlemleri için Commander'ın insert methodunu kullanabilirsiniz
+```php  
+  $com->
+  insert('tabloAdi',array('name'=>'tahir','foo'=>'bar')->
+  execute();
+```
+  Oluşturduğu sql kodu
+  *INSERT INTO tabloAdi (name,foo) VALUES ('tahir','bar')*
+  Eklenen kaydın IDsini döndürür
+  
