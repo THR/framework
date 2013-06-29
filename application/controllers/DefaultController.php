@@ -42,6 +42,13 @@ class DefaultController extends BaseController
         echo '------------------';
         var_dump( $com->update('lipsum',array('name'=>'commander','value'=>'update'))->where(rand(1,50))->execute() );
         */
+
+        echo '---- INSERT ---------';
+        var_dump(
+            $com->
+                insert('lipsum',array('name'=>uniqid(),'value'=>__FILE__))->
+                execute()
+        );
         echo '--- WHERE ARRAY  ---------------';
         var_dump( $com->update('lipsum',array('name'=>rand(1,1000),'value'=>'update'))->where(array('id'=>rand(1,20)))->execute() );
 
@@ -52,7 +59,15 @@ class DefaultController extends BaseController
         var_dump(
             $com->
                 update('lipsum',array('name'=>rand(1,1000),'value'=>'string with param'))->
-                where('id < ?',array(10))->
+                where('id < ?',array(rand(1,10)))->
+                execute()
+        );
+
+        echo '---- DELETE  -------';
+        var_dump(
+            $com->
+                delete('lipsum')->
+                where('id < ?',array(rand(1,100)))->
                 execute()
         );
 
@@ -60,8 +75,14 @@ class DefaultController extends BaseController
 
         Base::import('application.helpers.HtmlHelper');
         $logs = Base::getLogger()->getLogsByCategory('SQL');
-
-        HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman'));
-        var_dump($com);
+        $last = $logs[0][3];
+        $logs = array_map(
+            function($e) use ($last){
+                $e[4] = $e[3]-$last;
+                $last = $e[3];
+                return $e;
+            },$logs
+        );
+        HtmlHelper::makeTable($logs,array('Mesaj','Level','Type','Zaman','Fark'));
     }
 }

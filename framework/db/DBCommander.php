@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * #FRAMEWORKNAME#
+ *
+ * An open source PHP framework
+ *
+ * @package		#FRAMEWORKNAME#
+ * @license		http://codeigniter.com/user_guide/license.html
+ * @since		Version 1.0
+ */
 class DbCommander {
 
     public $pdo;
@@ -10,7 +18,7 @@ class DbCommander {
      * Type: Insert|Update|Delete|Select
      * Table: table name
      * Where:
-     * WhereType: array|string
+     * WhereType: array|string|string_with_array|pk
      * @var array
      */
     public $qParts = array();
@@ -26,10 +34,17 @@ class DbCommander {
 
     public $lastQuery;
 
-    
+    const WHERE_ARRAY   = 0;
+    const WHERE_PK      = 1;
+    const WHERE_STRING  = 2;
+    const WHERE_STRING_WITH_PARAMS  = 3;
 
 
-
+    /**
+     * Constructor
+     * @param DbConnector $connection The database connection
+     * @param null $query You can pass any sql stament to be executed
+     */
 
     public function __construct(DbConnector $connection,$query = null)
     {
@@ -48,6 +63,14 @@ class DbCommander {
         $this->stmt = $this->pdo->prepare($this->query);
     }
 
+    /**
+     * Executes the sql stament
+     * This method executes non-query sql statements like that insert, delete, update
+     *
+     * if sql statement is an insert query returns inserted row
+     * else affected row count
+     * @return mixed
+     */
     public function execute()
     {
         if($this->query == null)
@@ -72,6 +95,12 @@ class DbCommander {
         return $this->stmt->rowCount();
     }
 
+    /**
+     * Constructor'da bir sql gönderilmemişse
+     * DbCommander::qParts'dan bir sql oluşturmaya çalışır
+     *
+     * DbCommander::execute ve DbCommander::query den çağırılarak çalıştırılır
+     */
     public function prepareQuery()
     {
         switch($this->qParts['type']){
@@ -93,18 +122,6 @@ class DbCommander {
         }
     }
 
-    protected  function insertQuery()
-    {
-        $query[] = "INSERT INTO";
-        $query[] = $this->qParts['table'];
-        $query[] = '('.$this->getFields().')';
-        $query[] = 'VALUES';
-        $query[] = '('.$this->getPlaceholders().')';
-
-        $this->query = implode(' ',$query);
-
-    }
-
     public function insert($tableName,$params=array(),$execute = false)
     {
         $this->reset();
@@ -117,6 +134,20 @@ class DbCommander {
         else
             return $this;
     }
+
+
+    protected  function insertQuery()
+    {
+        $query[] = "INSERT INTO";
+        $query[] = $this->qParts['table'];
+        $query[] = '('.$this->getFields().')';
+        $query[] = 'VALUES';
+        $query[] = '('.$this->getPlaceholders().')';
+
+        $this->query = implode(' ',$query);
+
+    }
+
 
 
     public function update($tableName,$params,$execute = false)
@@ -158,12 +189,12 @@ class DbCommander {
         return implode(', ',$query);
     }
 
-    public function delete($tableName,$where)
+    public function delete($tableName)
     {
         $this->reset();
         $this->qParts['type'] = 'delete';
         $this->qParts['table'] = $tableName;
-        $this->qParts['where'] = $where;
+        return $this;
     }
 
     public function deleteQuery()
@@ -184,25 +215,25 @@ class DbCommander {
 
         if( is_array($condition) )
         {
-            $this->qParts['whereType'] = 'array';
+            $this->qParts['whereType'] = self::WHERE_ARRAY;
             $this->qParts['where'] = $condition;
             $this->qParts['whereOperator'] = $op;
             $this->qParts['whereGlue']     = $glue;
         }
         elseif(is_int($condition))
         {
-            $this->qParts['whereType'] = 'pk';
+            $this->qParts['whereType'] = self::WHERE_PK;
             $this->qParts['where']     = $condition;
         }
         else
         {
             if(is_array($op))
             {
-                $this->qParts['whereType'] = 'stringbind';
+                $this->qParts['whereType'] = self::WHERE_STRING_WITH_PARAMS;
                 $this->qParts['where'] = $condition;
                 $this->qParts['whereParams'] = $op;
             }else {
-                $this->qParts['whereType'] = 'string';
+                $this->qParts['whereType'] = self::WHERE_STRING;
                 $this->qParts['where'] = $condition;
             }
         }
@@ -218,7 +249,7 @@ class DbCommander {
 
         $query[] = "WHERE";
 
-        if($this->qParts['whereType'] === 'array')
+        if($this->qParts['whereType'] === self::WHERE_ARRAY)
         {
             $array = $this->qParts['where'];
             //array('id'=43) TO id = ?
@@ -235,16 +266,16 @@ class DbCommander {
 
 
         }
-        elseif($this->qParts['whereType'] === 'stringbind')
+        elseif($this->qParts['whereType'] === self::WHERE_STRING_WITH_PARAMS)
         {
             $query[] = $this->qParts['where'];
             $this->bindArray($this->qParts['whereParams']);
         }
-        elseif($this->qParts['whereType'] === 'string')
+        elseif($this->qParts['whereType'] === self::WHERE_STRING)
         {
             $query[] = $this->qParts['where'];
         }
-        elseif($this->qParts['whereType'] === 'pk')
+        elseif($this->qParts['whereType'] === self::WHERE_PK)
         {
             $this->bind($this->qParts['where']);
             $query[] =  'id = ?';
@@ -293,7 +324,33 @@ class DbCommander {
      */
     public function readableQuery()
     {
-        return str_replace(array_keys($this->params),$this->params,$this->query);
+        $keys = array();
+        $values = array();
+
+        # build a regular expression for each parameter
+        foreach ($this->params as $key=>$value)
+        {
+            if (is_string($key))
+            {
+                $keys[] = '/:'.$key.'/';
+            }
+            else
+            {
+                $keys[] = '/[?]/';
+            }
+
+            if(is_numeric($value))
+            {
+                $values[] = intval($value);
+            }
+            else
+            {
+                $values[] = '"'.$value .'"';
+            }
+        }
+
+        $query = preg_replace($keys, $values, $this->query, 1, $count);
+        return $query;
     }
 
     public function findType()

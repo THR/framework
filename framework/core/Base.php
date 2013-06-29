@@ -2,6 +2,7 @@
 define('FW_PATH',dirname(dirname(__FILE__)));
 define('BASE_PATH',dirname(FW_PATH));
 define('LOGGING',true);
+define('BOOT_TIME',microtime(true));
 class Base
 {
     private static $app;
@@ -13,8 +14,6 @@ class Base
         'BaseController'=>'core/BaseController.php',
         'Request'=>'web/Request.php',
         'Router'=>'web/Router.php',
-        'QueryBuilder'=>'db\QueryBuilder.php',
-        //'Database'=>'db\Database.php',
         'SimpleLogger'=>'core\SimpleLogger.php',
         'DbCommander'=>'db\DbCommander.php',
         'DbConnector'=>'db\DbConnector.php',
